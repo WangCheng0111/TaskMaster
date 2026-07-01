@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Window
+    x:Class="TaskMaster.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:TaskMaster"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="TaskMaster">
+
+<Window.SystemBackdrop>
+    <MicaBackdrop Kind="Base"/>
+</Window.SystemBackdrop>
+
+<Grid>
+    <Grid.RowDefinitions>
+        <!-- Title Bar -->
+        <RowDefinition Height="44" />
+        <!-- App Content -->
+        <RowDefinition Height="*" />     
+    </Grid.RowDefinitions>
+    <Grid Grid.Row="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="Auto" />
+        </Grid.ColumnDefinitions>
+
+        <Grid x:Name="AppTitleBar"
+              Grid.Column="0"
+              HorizontalAlignment="Stretch"
+              VerticalAlignment="Stretch"
+              Background="Transparent" />
+
+        <StackPanel Grid.Column="1"
+                    Orientation="Horizontal"
+                    Spacing="0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Top">
+            <Border x:Name="MinimizeButtonBorder" Width="44" Height="44" CornerRadius="0" Background="Transparent" 
+                    ToolTipService.ToolTip="最小化"
+                    PointerEntered="ButtonBorder_PointerEntered" 
+                    PointerMoved="ButtonBorder_PointerMoved"
+                    PointerExited="ButtonBorder_PointerExited"
+                    PointerPressed="ButtonBorder_PointerPressed"
+                    PointerReleased="ButtonBorder_PointerReleased">
+                <FontIcon x:Name="MinimizeIcon" FontFamily="ms-appx:///Assets/Fonts/Segoe Fluent Icons.ttf#Segoe Fluent Icons" 
+                          Glyph="&#xE921;" 
+                          FontSize="10" 
+                          Foreground="#FF2D2D2D" 
+                          VerticalAlignment="Center" 
+                          HorizontalAlignment="Center"
+                          IsHitTestVisible="False"/>
+            </Border>
+            <Border x:Name="MaximizeButtonBorder" Width="44" Height="44" CornerRadius="0" Background="Transparent" 
+                    ToolTipService.ToolTip="最大化"
+                    PointerEntered="ButtonBorder_PointerEntered" 
+                    PointerMoved="ButtonBorder_PointerMoved"
+                    PointerExited="ButtonBorder_PointerExited"
+                    PointerPressed="ButtonBorder_PointerPressed"
+                    PointerReleased="ButtonBorder_PointerReleased">
+                <FontIcon x:Name="MaximizeIcon" FontFamily="ms-appx:///Assets/Fonts/Segoe Fluent Icons.ttf#Segoe Fluent Icons" 
+                          Glyph="&#xE922;" 
+                          FontSize="10" 
+                          Foreground="#FF2D2D2D" 
+                          VerticalAlignment="Center" 
+                          HorizontalAlignment="Center"
+                          IsHitTestVisible="False"/>
+            </Border>
+            <Border x:Name="CloseButtonBorder" Width="44" Height="44" CornerRadius="0" Background="Transparent" 
+                    ToolTipService.ToolTip="关闭"
+                    PointerEntered="ButtonBorder_PointerEntered" 
+                    PointerMoved="ButtonBorder_PointerMoved"
+                    PointerExited="ButtonBorder_PointerExited"
+                    PointerPressed="ButtonBorder_PointerPressed"
+                    PointerReleased="ButtonBorder_PointerReleased">
+                <FontIcon x:Name="CloseIcon" FontFamily="ms-appx:///Assets/Fonts/Segoe Fluent Icons.ttf#Segoe Fluent Icons" 
+                          Glyph="&#xE8BB;" 
+                          FontSize="10" 
+                          Foreground="#FF2D2D2D" 
+                          VerticalAlignment="Center" 
+                          HorizontalAlignment="Center"
+                          IsHitTestVisible="False"/>
+            </Border>
+        </StackPanel>
+    </Grid>
+
+    <!-- App content -->
+    <Frame x:Name="rootFrame" Grid.Row="1"/>
+</Grid>
+</Window>
