@@ -45,11 +45,6 @@ namespace TaskMaster
         /// <param name="args">Details about the launch request and process.</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            var culture = new CultureInfo("zh-CN");
-            CultureInfo.DefaultThreadCurrentCulture = culture;
-            CultureInfo.DefaultThreadCurrentUICulture = culture;
-            ApplicationLanguages.PrimaryLanguageOverride = "zh-CN";
-
             _window = new MainWindow();
             _window.Activate();
         }
