@@ -40,8 +40,9 @@
                           Foreground="#FF2D2D2D"
                           VerticalAlignment="Center"/>
                 <TextBlock x:Name="TitleText"
-                           Text="你好"
+                           Text="百事可乐"
                            FontSize="14"
+                           CharacterSpacing="10"
                            VerticalAlignment="Center"
                            Foreground="#FF2D2D2D"/>
             </StackPanel>
@@ -106,6 +107,7 @@
                     OpenPaneLength="200"
                     IsSettingsVisible="False"
                     IsBackButtonVisible="Collapsed"
+                    IsTabStop="False"
                     SelectionChanged="nvSample_SelectionChanged">
         <NavigationView.MenuItems>
             <NavigationViewItem x:Name="SamplePage1Item" Icon="Play" Content="Menu Item1" Tag="SamplePage1" IsSelected="True" />
