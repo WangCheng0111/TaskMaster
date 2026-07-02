@@ -51,6 +51,11 @@ namespace TaskMaster
         private static readonly Windows.UI.Color TitleDefaultColor = Windows.UI.Color.FromArgb(255, 45, 45, 45);
         private FontIcon? _titleIcon;
         private TextBlock? _titleText;
+        private Button? _paneToggleButton;
+        private NavigationViewItem? _samplePage1Item;
+        private NavigationViewItem? _samplePage2Item;
+        private NavigationViewItem? _samplePage3Item;
+        private NavigationViewItem? _samplePage4Item;
 
         public MainWindow()
         {
@@ -61,10 +66,17 @@ namespace TaskMaster
             MoveAndCenterWindowOnScreen(new SizeInt32(1200, 800));
             AppWindow.Changed += AppWindow_Changed;
             Activated += MainWindow_Activated;
+            nvSample.Loaded += NvSample_Loaded;
+            nvSample.PaneOpened += NvSample_PaneStateChanged;
+            nvSample.PaneClosed += NvSample_PaneStateChanged;
 
             var root = Content as FrameworkElement;
             _titleIcon = root?.FindName("TitleIcon") as FontIcon;
             _titleText = root?.FindName("TitleText") as TextBlock;
+            _samplePage1Item = root?.FindName("SamplePage1Item") as NavigationViewItem;
+            _samplePage2Item = root?.FindName("SamplePage2Item") as NavigationViewItem;
+            _samplePage3Item = root?.FindName("SamplePage3Item") as NavigationViewItem;
+            _samplePage4Item = root?.FindName("SamplePage4Item") as NavigationViewItem;
 
             UpdateMaximizeGlyph();
 
@@ -427,6 +439,86 @@ namespace TaskMaster
             var isMaximized = presenter.State == OverlappedPresenterState.Maximized;
             MaximizeIcon.Glyph = isMaximized ? _restoreGlyph : _maximizeGlyph;
             ToolTipService.SetToolTip(MaximizeButtonBorder, isMaximized ? "恢复" : "最大化");
+        }
+
+        private void UpdatePaneToggleToolTip()
+        {
+            var paneToggleButton = FindPaneToggleButton();
+            if (paneToggleButton is null)
+            {
+                return;
+            }
+
+            ToolTipService.SetToolTip(
+                paneToggleButton,
+                nvSample.IsPaneOpen ? "关闭侧边栏" : "打开侧边栏");
+
+            UpdateMenuItemToolTips();
+        }
+
+        private void UpdateMenuItemToolTips()
+        {
+            var toolTip = nvSample.IsPaneOpen ? null : "第一个";
+            if (_samplePage1Item is not null)
+            {
+                ToolTipService.SetToolTip(_samplePage1Item, toolTip);
+            }
+
+            if (_samplePage2Item is not null)
+            {
+                ToolTipService.SetToolTip(_samplePage2Item, nvSample.IsPaneOpen ? null : "第二个");
+            }
+
+            if (_samplePage3Item is not null)
+            {
+                ToolTipService.SetToolTip(_samplePage3Item, nvSample.IsPaneOpen ? null : "第三个");
+            }
+
+            if (_samplePage4Item is not null)
+            {
+                ToolTipService.SetToolTip(_samplePage4Item, nvSample.IsPaneOpen ? null : "第四个");
+            }
+        }
+
+        private void NvSample_Loaded(object sender, RoutedEventArgs e)
+        {
+            UpdatePaneToggleToolTip();
+        }
+
+        private void NvSample_PaneStateChanged(object sender, object e)
+        {
+            UpdatePaneToggleToolTip();
+        }
+
+        private Button? FindPaneToggleButton()
+        {
+            return FindVisualChildByName<Button>(nvSample, "TogglePaneButton");
+        }
+
+        private static T? FindVisualChildByName<T>(DependencyObject parent, string name) where T : FrameworkElement
+        {
+            if (parent is null)
+            {
+                return null;
+            }
+
+            var count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
+            for (var i = 0; i < count; i++)
+            {
+                var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
+                if (child is T element && element.Name == name)
+                {
+                    return element;
+                }
+
+                var result = FindVisualChildByName<T>(child, name);
+                if (result is not null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
         }
 
         private void UpdateTitleVisuals(bool focused)

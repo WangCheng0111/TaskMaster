@@ -110,10 +110,10 @@
                     IsTabStop="False"
                     SelectionChanged="nvSample_SelectionChanged">
         <NavigationView.MenuItems>
-            <NavigationViewItem x:Name="SamplePage1Item" Icon="Play" Content="Menu Item1" Tag="SamplePage1" IsSelected="True" />
-            <NavigationViewItem Icon="Save" Content="Menu Item2" Tag="SamplePage2" />
-            <NavigationViewItem Icon="Refresh" Content="Menu Item3" Tag="SamplePage3" />
-            <NavigationViewItem Icon="Download" Content="Menu Item4" Tag="SamplePage4" />
+            <NavigationViewItem x:Name="SamplePage1Item" Icon="Play" Content="Menu Item1" Tag="SamplePage1" IsSelected="True" ToolTipService.ToolTip="第一个" />
+            <NavigationViewItem Icon="Save" Content="Menu Item2" Tag="SamplePage2" ToolTipService.ToolTip="第二个" />
+            <NavigationViewItem Icon="Refresh" Content="Menu Item3" Tag="SamplePage3" ToolTipService.ToolTip="第三个" />
+            <NavigationViewItem Icon="Download" Content="Menu Item4" Tag="SamplePage4" ToolTipService.ToolTip="第四个" />
         </NavigationView.MenuItems>
         <Frame x:Name="contentFrame" />
     </NavigationView>
