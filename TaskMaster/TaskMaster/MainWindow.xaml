@@ -42,7 +42,7 @@
                 <TextBlock x:Name="TitleText"
                            Text="百事可乐"
                            FontSize="14"
-                           CharacterSpacing="10"
+                           CharacterSpacing="50"
                            VerticalAlignment="Center"
                            Foreground="#FF2D2D2D"/>
             </StackPanel>
