@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Window
     x:Class="TaskMaster.MainWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -30,8 +30,22 @@
               Grid.Column="0"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Stretch"
-              Background="Transparent" />
-
+              Background="Transparent">
+            <StackPanel Orientation="Horizontal"
+                        VerticalAlignment="Center"
+                        Spacing="8"
+                        Margin="12,0,0,0">
+                <FontIcon x:Name="TitleIcon"
+                          Glyph="&#xF4AA;"
+                          Foreground="#FF2D2D2D"
+                          VerticalAlignment="Center"/>
+                <TextBlock x:Name="TitleText"
+                           Text="你好"
+                           FontSize="14"
+                           VerticalAlignment="Center"
+                           Foreground="#FF2D2D2D"/>
+            </StackPanel>
+        </Grid>
         <StackPanel Grid.Column="1"
                     Orientation="Horizontal"
                     Spacing="0"
@@ -86,6 +100,20 @@
     </Grid>
 
     <!-- App content -->
-    <Frame x:Name="rootFrame" Grid.Row="1"/>
+    <NavigationView x:Name="nvSample"
+                    Grid.Row="1"
+                    PaneDisplayMode="Left"
+                    OpenPaneLength="200"
+                    IsSettingsVisible="False"
+                    IsBackButtonVisible="Collapsed"
+                    SelectionChanged="nvSample_SelectionChanged">
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Name="SamplePage1Item" Icon="Play" Content="Menu Item1" Tag="SamplePage1" IsSelected="True" />
+            <NavigationViewItem Icon="Save" Content="Menu Item2" Tag="SamplePage2" />
+            <NavigationViewItem Icon="Refresh" Content="Menu Item3" Tag="SamplePage3" />
+            <NavigationViewItem Icon="Download" Content="Menu Item4" Tag="SamplePage4" />
+        </NavigationView.MenuItems>
+        <Frame x:Name="contentFrame" />
+    </NavigationView>
 </Grid>
 </Window>

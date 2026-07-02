@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using TaskMaster.Pages;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics;
@@ -42,10 +43,14 @@ namespace TaskMaster
         private readonly HashSet<Border> _pressedOutsideBorders = new();
         private readonly Windows.UI.Color _inactiveIconColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
         private static readonly Windows.UI.Color DefaultIconFocusColor = Windows.UI.Color.FromArgb(255, 45, 45, 45);
-        private static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(2);
+        private static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(0.2);
         private bool _isWindowFocused = true;
         private readonly string _maximizeGlyph = "\uE922";
         private readonly string _restoreGlyph = "\uE923";
+        private readonly Windows.UI.Color _titleInactiveColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
+        private static readonly Windows.UI.Color TitleDefaultColor = Windows.UI.Color.FromArgb(255, 45, 45, 45);
+        private FontIcon? _titleIcon;
+        private TextBlock? _titleText;
 
         public MainWindow()
         {
@@ -53,9 +58,13 @@ namespace TaskMaster
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
             AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
-            AppWindow.Resize(new SizeInt32(800, 600));
+            MoveAndCenterWindowOnScreen(new SizeInt32(1200, 800));
             AppWindow.Changed += AppWindow_Changed;
             Activated += MainWindow_Activated;
+
+            var root = Content as FrameworkElement;
+            _titleIcon = root?.FindName("TitleIcon") as FontIcon;
+            _titleText = root?.FindName("TitleText") as TextBlock;
 
             UpdateMaximizeGlyph();
 
@@ -345,10 +354,66 @@ namespace TaskMaster
             UpdateMaximizeGlyph();
         }
 
+        private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
+        {
+            if (args.SelectedItemContainer is not NavigationViewItem item || item.Tag is not string tag)
+            {
+                return;
+            }
+
+            if (contentFrame.CurrentSourcePageType is null)
+            {
+                NavigateToPage(tag);
+                return;
+            }
+
+            if (contentFrame.CurrentSourcePageType == GetPageType(tag))
+            {
+                return;
+            }
+
+            NavigateToPage(tag);
+        }
+
+        private void NavigateToPage(string tag)
+        {
+            var pageType = GetPageType(tag);
+            if (pageType is null)
+            {
+                return;
+            }
+
+            contentFrame.Navigate(pageType);
+        }
+
+        private static Type? GetPageType(string tag)
+        {
+            return tag switch
+            {
+                "SamplePage1" => typeof(SamplePage1),
+                "SamplePage2" => typeof(SamplePage2),
+                "SamplePage3" => typeof(SamplePage3),
+                "SamplePage4" => typeof(SamplePage4),
+                _ => null,
+            };
+        }
+
+        private void MoveAndCenterWindowOnScreen(SizeInt32 size)
+        {
+            var displayArea = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Primary);
+            var workArea = displayArea.WorkArea;
+
+            var x = workArea.X + Math.Max(0, (workArea.Width - size.Width) / 2);
+            var y = workArea.Y + Math.Max(0, (workArea.Height - size.Height) / 2);
+
+            AppWindow.MoveAndResize(new RectInt32(x, y, size.Width, size.Height));
+        }
+
         private void MainWindow_Activated(object sender, WindowActivatedEventArgs args)
         {
             _isWindowFocused = args.WindowActivationState != WindowActivationState.Deactivated;
             UpdateIconFocusState(_isWindowFocused);
+            UpdateTitleVisuals(_isWindowFocused);
         }
 
         private void UpdateMaximizeGlyph()
@@ -362,6 +427,13 @@ namespace TaskMaster
             var isMaximized = presenter.State == OverlappedPresenterState.Maximized;
             MaximizeIcon.Glyph = isMaximized ? _restoreGlyph : _maximizeGlyph;
             ToolTipService.SetToolTip(MaximizeButtonBorder, isMaximized ? "恢复" : "最大化");
+        }
+
+        private void UpdateTitleVisuals(bool focused)
+        {
+            var targetColor = focused ? TitleDefaultColor : _titleInactiveColor;
+            AnimateIconForeground(_titleIcon, targetColor, animate: true);
+            AnimateTextForeground(_titleText, targetColor, animate: true);
         }
 
         private void UpdateIconFocusState(bool focused)
@@ -395,6 +467,36 @@ namespace TaskMaster
                 : _inactiveIconColor;
 
             AnimateIconForeground(icon, targetColor, animate: true);
+        }
+
+        private void AnimateTextForeground(TextBlock? textBlock, Windows.UI.Color targetColor, bool animate)
+        {
+            if (textBlock is null)
+            {
+                return;
+            }
+
+            if (textBlock.Foreground is not SolidColorBrush brush)
+            {
+                brush = new SolidColorBrush(targetColor);
+                textBlock.Foreground = brush;
+                return;
+            }
+
+            if (!animate)
+            {
+                brush.Color = targetColor;
+                return;
+            }
+
+            var currentColor = brush.Color;
+            if (ColorsEqual(currentColor, targetColor))
+            {
+                brush.Color = targetColor;
+                return;
+            }
+
+            StartTextAnimation(brush, currentColor, targetColor);
         }
 
         private void UpdateAllButtonIcons(Windows.UI.Color targetColor)
@@ -437,8 +539,13 @@ namespace TaskMaster
             StartBorderAnimation(brush, border, currentColor, targetColor);
         }
 
-        private void AnimateIconForeground(FontIcon icon, Windows.UI.Color targetColor, bool animate)
+        private void AnimateIconForeground(FontIcon? icon, Windows.UI.Color targetColor, bool animate)
         {
+            if (icon is null)
+            {
+                return;
+            }
+
             if (icon.Foreground is not SolidColorBrush brush)
             {
                 brush = new SolidColorBrush(targetColor);
@@ -560,6 +667,27 @@ namespace TaskMaster
 
             state.Storyboard.Stop();
             _activeBorderAnimations.Remove(border);
+        }
+
+        private void StartTextAnimation(SolidColorBrush brush, Windows.UI.Color fromColor, Windows.UI.Color toColor)
+        {
+            var storyboard = new Storyboard();
+            var animation = new ColorAnimation
+            {
+                Duration = AnimationDuration,
+                From = fromColor,
+                To = toColor,
+                EnableDependentAnimation = true,
+                EasingFunction = new CubicEase
+                {
+                    EasingMode = EasingMode.EaseOut
+                }
+            };
+
+            Storyboard.SetTarget(animation, brush);
+            Storyboard.SetTargetProperty(animation, "Color");
+            storyboard.Children.Add(animation);
+            storyboard.Begin();
         }
 
         private void StopIconAnimation(FontIcon icon, bool freezeCurrent)
