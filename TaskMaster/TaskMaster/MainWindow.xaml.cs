@@ -428,31 +428,6 @@ namespace TaskMaster
             ToolTipService.SetToolTip(MaximizeButtonBorder, isMaximized ? "恢复" : "最大化");
         }
 
-        private static T? FindVisualChildByName<T>(DependencyObject parent, string name) where T : FrameworkElement
-        {
-            if (parent is null)
-            {
-                return null;
-            }
-
-            var count = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChildrenCount(parent);
-            for (var i = 0; i < count; i++)
-            {
-                var child = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetChild(parent, i);
-                if (child is T element && element.Name == name)
-                {
-                    return element;
-                }
-
-                var result = FindVisualChildByName<T>(child, name);
-                if (result is not null)
-                {
-                    return result;
-                }
-            }
-
-            return null;
-        }
 
         private void UpdateTitleVisuals(bool focused)
         {
