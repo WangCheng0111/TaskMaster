@@ -11,7 +11,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
-using TaskMaster.Pages;
+using TaskMaster.ViewModels;
+using TaskMaster.Views;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Graphics;
@@ -20,6 +21,8 @@ namespace TaskMaster
 {
     public sealed partial class MainWindow : Window
     {
+        public MainWindowViewModel ViewModel { get; } = new();
+
         private sealed class ColorAnimationState
         {
             public Storyboard Storyboard { get; init; } = null!;
@@ -54,10 +57,11 @@ namespace TaskMaster
         public MainWindow()
         {
             InitializeComponent();
+            ViewModel.NavigateRequested += ViewModel_NavigateRequested;
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
             AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
-            MoveAndCenterWindowOnScreen(new SizeInt32(1200, 800));
+            MoveAndCenterWindowOnScreen(new SizeInt32(800, 600));
             AppWindow.Changed += AppWindow_Changed;
             Activated += MainWindow_Activated;
 
@@ -65,7 +69,7 @@ namespace TaskMaster
             _titleIcon = root?.FindName("TitleIcon") as FontIcon;
             _titleText = root?.FindName("TitleText") as TextBlock;
 
-            UpdateMaximizeGlyph();
+            NavigateToPage(ViewModel.SelectedPageTag);
 
             RegisterButtonVisuals(
                 MinimizeButtonBorder,
@@ -233,7 +237,6 @@ namespace TaskMaster
             _pressedOutsideBorders.Remove(border);
             RestoreBorderImmediately(border);
             RestoreIconImmediatelyIfNeeded(border);
-            UpdateMaximizeGlyph();
         }
 
         private static bool IsPointerInside(Border border, PointerRoutedEventArgs e)
@@ -338,7 +341,6 @@ namespace TaskMaster
                     presenter.Maximize();
                 }
 
-                UpdateMaximizeGlyph();
                 return;
             }
 
@@ -350,7 +352,7 @@ namespace TaskMaster
 
         private void AppWindow_Changed(AppWindow sender, AppWindowChangedEventArgs args)
         {
-            UpdateMaximizeGlyph();
+            UpdateMaximizeState();
         }
 
         private void nvSample_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -360,18 +362,7 @@ namespace TaskMaster
                 return;
             }
 
-            if (contentFrame.CurrentSourcePageType is null)
-            {
-                NavigateToPage(tag);
-                return;
-            }
-
-            if (contentFrame.CurrentSourcePageType == GetPageType(tag))
-            {
-                return;
-            }
-
-            NavigateToPage(tag);
+            ViewModel.SelectedPageTag = tag;
         }
 
         private void NavigateToPage(string tag)
@@ -382,7 +373,25 @@ namespace TaskMaster
                 return;
             }
 
+            if (contentFrame.CurrentSourcePageType == pageType)
+            {
+                return;
+            }
+
             contentFrame.Navigate(pageType);
+        }
+
+        private void ViewModel_NavigateRequested(string tag)
+        {
+            NavigateToPage(tag);
+            foreach (var menuItem in nvSample.MenuItems.OfType<NavigationViewItem>())
+            {
+                if (Equals(menuItem.Tag, tag))
+                {
+                    nvSample.SelectedItem = menuItem;
+                    break;
+                }
+            }
         }
 
         private static Type? GetPageType(string tag)
@@ -415,19 +424,16 @@ namespace TaskMaster
             UpdateTitleVisuals(_isWindowFocused);
         }
 
-        private void UpdateMaximizeGlyph()
+        private void UpdateMaximizeState()
         {
             var presenter = GetPresenter();
-            if (presenter is null || MaximizeIcon is null)
+            if (presenter is null)
             {
                 return;
             }
 
-            var isMaximized = presenter.State == OverlappedPresenterState.Maximized;
-            MaximizeIcon.Glyph = isMaximized ? _restoreGlyph : _maximizeGlyph;
-            ToolTipService.SetToolTip(MaximizeButtonBorder, isMaximized ? "恢复" : "最大化");
+            ViewModel.IsMaximized = presenter.State == OverlappedPresenterState.Maximized;
         }
-
 
         private void UpdateTitleVisuals(bool focused)
         {

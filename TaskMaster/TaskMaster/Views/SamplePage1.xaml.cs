@@ -1,6 +1,6 @@
 using Microsoft.UI.Xaml.Controls;
 
-namespace TaskMaster.Pages;
+namespace TaskMaster.Views;
 
 public sealed partial class SamplePage1 : Page
 {

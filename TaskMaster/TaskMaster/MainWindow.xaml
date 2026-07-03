@@ -68,14 +68,14 @@
                           IsHitTestVisible="False"/>
             </Border>
             <Border x:Name="MaximizeButtonBorder" Width="44" Height="44" CornerRadius="0" Background="Transparent" 
-                    ToolTipService.ToolTip="最大化"
+                    ToolTipService.ToolTip="{x:Bind ViewModel.MaximizeToolTip, Mode=OneWay}"
                     PointerEntered="ButtonBorder_PointerEntered" 
                     PointerMoved="ButtonBorder_PointerMoved"
                     PointerExited="ButtonBorder_PointerExited"
                     PointerPressed="ButtonBorder_PointerPressed"
                     PointerReleased="ButtonBorder_PointerReleased">
                 <FontIcon x:Name="MaximizeIcon" FontFamily="ms-appx:///Assets/Fonts/Segoe Fluent Icons.ttf#Segoe Fluent Icons" 
-                          Glyph="&#xE922;" 
+                          Glyph="{x:Bind ViewModel.MaximizeGlyph, Mode=OneWay}" 
                           FontSize="10" 
                           Foreground="#FF2D2D2D" 
                           VerticalAlignment="Center" 
