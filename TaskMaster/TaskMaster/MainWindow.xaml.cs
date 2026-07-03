@@ -61,7 +61,7 @@ namespace TaskMaster
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
             AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
-            MoveAndCenterWindowOnScreen(new SizeInt32(800, 600));
+            MoveAndCenterWindowOnScreen(new SizeInt32(1200, 800));
             AppWindow.Changed += AppWindow_Changed;
             Activated += MainWindow_Activated;
 
