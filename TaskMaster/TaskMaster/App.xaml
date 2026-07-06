@@ -3,7 +3,8 @@
     x:Class="TaskMaster.App"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-    xmlns:local="using:TaskMaster">
+    xmlns:local="using:TaskMaster"
+    xmlns:converters="using:TaskMaster.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -12,6 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
 
             <FontFamily x:Key="AppFontFamily">ms-appx:///Assets/Fonts/HarmonyOS_SansSC_Regular.ttf#HarmonyOS Sans SC</FontFamily>
+            <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
             <Style TargetType="TextBlock">
                 <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
