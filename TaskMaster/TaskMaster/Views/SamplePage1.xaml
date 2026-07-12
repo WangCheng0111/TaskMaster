@@ -12,107 +12,514 @@
         <viewModels:SamplePage1ViewModel />
     </Page.DataContext>
 
-    <Grid Padding="24">
+    <Page.Resources>
+        <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#6366f1" Offset="0" />
+            <GradientStop Color="#8b5cf6" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="AccentGradientBrushHover" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4f46e5" Offset="0" />
+            <GradientStop Color="#7c3aed" Offset="1" />
+        </LinearGradientBrush>
+        <LinearGradientBrush x:Key="AccentGradientBrushPressed" StartPoint="0,0" EndPoint="1,1">
+            <GradientStop Color="#4338ca" Offset="0" />
+            <GradientStop Color="#6d28d9" Offset="1" />
+        </LinearGradientBrush>
+
+        <Style x:Key="BorderlessTextBoxStyle" TargetType="TextBox">
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="#0F172A" />
+            <Setter Property="PlaceholderForeground" Value="#94A3B8" />
+            <Setter Property="SelectionHighlightColor" Value="#6366F1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver" />
+                                    <VisualState x:Name="Focused" />
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="ContentElement.Foreground" Value="#94A3B8" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ScrollViewer x:Name="ContentElement"
+                                          Grid.Row="0"
+                                          HorizontalScrollMode="Auto"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollMode="Disabled"
+                                          VerticalScrollBarVisibility="Disabled"
+                                          IsHorizontalRailEnabled="True"
+                                          IsVerticalRailEnabled="False"
+                                          Padding="{TemplateBinding Padding}"
+                                          Foreground="{TemplateBinding Foreground}"
+                                          Background="Transparent"
+                                          BorderThickness="0"
+                                          VerticalAlignment="Center"
+                                          HorizontalAlignment="Stretch"
+                                          ZoomMode="Disabled" />
+                            <ContentPresenter x:Name="PlaceholderTextContentPresenter"
+                                              Grid.Row="0"
+                                              Content="{TemplateBinding PlaceholderText}"
+                                              Foreground="{TemplateBinding PlaceholderForeground}"
+                                              FontSize="{TemplateBinding FontSize}"
+                                              FontFamily="{TemplateBinding FontFamily}"
+                                              Padding="{TemplateBinding Padding}"
+                                              VerticalAlignment="Center"
+                                              HorizontalAlignment="Stretch"
+                                              IsHitTestVisible="False" />
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <UniformGridLayout x:Key="FormGridLayout"
+                           MinItemWidth="208"
+                           MinItemHeight="98"
+                           MinRowSpacing="12"
+                           MinColumnSpacing="12" />
+
+        <Storyboard x:Key="FeedbackFadeInStoryboard">
+            <DoubleAnimation Storyboard.TargetName="CopyFeedbackBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.18" />
+        </Storyboard>
+        <Storyboard x:Key="FeedbackFadeOutStoryboard">
+            <DoubleAnimation Storyboard.TargetName="CopyFeedbackBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             From="1" To="0" Duration="0:0:0.22" />
+        </Storyboard>
+
+        <Style x:Key="AccentButtonStyle" TargetType="Button">
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="22,10" />
+            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                Padding="{TemplateBinding Padding}"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AccentGradientBrushHover}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <Storyboard>
+                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
+                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AccentGradientBrushPressed}" />
+                                            </ObjectAnimationUsingKeyFrames>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale"
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="0.97" Duration="0:0:0.08" />
+                                            <DoubleAnimation Storyboard.TargetName="RootScale"
+                                                             Storyboard.TargetProperty="ScaleY"
+                                                             To="0.97" Duration="0:0:0.08" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#E2E8F0" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="#94A3B8" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter x:Name="ContentPresenter"
+                                              Content="{TemplateBinding Content}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              FontSize="{TemplateBinding FontSize}"
+                                              FontWeight="{TemplateBinding FontWeight}"
+                                              FontFamily="{TemplateBinding FontFamily}"
+                                              HorizontalContentAlignment="Center"
+                                              VerticalContentAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="34" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="CornerRadius" Value="17" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="Root"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{TemplateBinding CornerRadius}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#F1F5F9" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#E2E8F0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <ContentPresenter Content="{TemplateBinding Content}"
+                                              Foreground="{TemplateBinding Foreground}"
+                                              HorizontalContentAlignment="Center"
+                                              VerticalContentAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="FormCardButtonStyle" TargetType="Button">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="VerticalContentAlignment" Value="Stretch" />
+            <Setter Property="Padding" Value="16,13" />
+            <Setter Property="CornerRadius" Value="14" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="BorderBrush" Value="#EEF2FF" />
+            <Setter Property="Background" Value="#FFFFFF" />
+            <Setter Property="MinHeight" Value="98" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="UseSystemFocusVisuals" Value="True" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroup x:Name="CommonStates">
+                                    <VisualState x:Name="Normal" />
+                                    <VisualState x:Name="PointerOver">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#F5F3FF" />
+                                            <Setter Target="Root.BorderBrush" Value="#C7D2FE" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                    <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#EDE9FE" />
+                                            <Setter Target="Root.BorderBrush" Value="#C7D2FE" />
+                                        </VisualState.Setters>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale"
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="0.98" Duration="0:0:0.08" />
+                                            <DoubleAnimation Storyboard.TargetName="RootScale"
+                                                             Storyboard.TargetProperty="ScaleY"
+                                                             To="0.98" Duration="0:0:0.08" />
+                                        </Storyboard>
+                                    </VisualState>
+                                    <VisualState x:Name="Disabled">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#F8FAFC" />
+                                            <Setter Target="Root.BorderBrush" Value="#E2E8F0" />
+                                        </VisualState.Setters>
+                                    </VisualState>
+                                </VisualStateGroup>
+                            </VisualStateManager.VisualStateGroups>
+                            <Border x:Name="ShadowTarget"
+                                    Background="Transparent"
+                                    CornerRadius="{TemplateBinding CornerRadius}" />
+                            <Border x:Name="Root"
+                                    Background="{TemplateBinding Background}"
+                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    CornerRadius="{TemplateBinding CornerRadius}"
+                                    Padding="{TemplateBinding Padding}"
+                                    RenderTransformOrigin="0.5,0.5"
+                                    Translation="0,0,8">
+                                <Border.RenderTransform>
+                                    <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1" />
+                                </Border.RenderTransform>
+                                <Border.Shadow>
+                                    <ThemeShadow />
+                                </Border.Shadow>
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  ContentTemplate="{TemplateBinding ContentTemplate}"
+                                                  HorizontalContentAlignment="Stretch"
+                                                  VerticalContentAlignment="Stretch" />
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <DataTemplate x:Key="FormCardTemplate" x:DataType="models:VerbConjugationItem">
+            <Button Style="{StaticResource FormCardButtonStyle}"
+                    Click="FormCard_Click"
+                    Tag="{x:Bind FormValue}">
+                <Grid RowSpacing="8">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
+                        <Border Grid.Column="0"
+                                Width="7" Height="7"
+                                CornerRadius="3.5"
+                                Background="{StaticResource AccentGradientBrush}"
+                                VerticalAlignment="Center" />
+                        <TextBlock Grid.Column="1"
+                                   Text="{x:Bind FormName}"
+                                   Margin="8,0,0,0"
+                                   FontSize="12.5"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource AppFontFamilyMedium}"
+                                   Foreground="#6366F1"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+                    <TextBlock Grid.Row="1"
+                               Text="{x:Bind FormValue}"
+                               FontSize="19"
+                               FontWeight="SemiBold"
+                               FontFamily="{StaticResource AppFontFamilyMedium}"
+                               Foreground="#0F172A"
+                               VerticalAlignment="Bottom"
+                               TextWrapping="NoWrap"
+                               TextTrimming="CharacterEllipsis" />
+                </Grid>
+            </Button>
+        </DataTemplate>
+    </Page.Resources>
+
+    <Grid Padding="34,26,34,24">
         <Grid.Background>
             <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#f8fafc" Offset="0" />
+                <GradientStop Color="#fbfcff" Offset="0" />
                 <GradientStop Color="#eef2ff" Offset="1" />
             </LinearGradientBrush>
         </Grid.Background>
-        <Grid RowSpacing="18">
+
+        <Grid RowSpacing="22">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Spacing="4">
-                <TextBlock Text="动词变形查询"
-                           FontSize="30"
-                           FontWeight="SemiBold"
-                           Foreground="#0f172a" />
-                <TextBlock Text="输入辞書形，查看各类活用。"
-                           FontSize="13"
-                           Foreground="#64748b" />
-            </StackPanel>
-
-            <Border Grid.Row="1"
-                    Padding="18"
-                    CornerRadius="22"
-                    Background="#ffffff"
-                    BorderBrush="#e2e8f0"
-                    BorderThickness="1">
-                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
-                    <TextBox Height="38"
-                             PlaceholderText="例如：書く、食べる、する、来る"
-                             FontSize="16"
-                             Text="{x:Bind ViewModel.InputWord, Mode=TwoWay}" />
-
-                    <Button Grid.Column="1"
-                            Content="查询"
-                            MinWidth="96"
-                            Height="38"
-                            Command="{x:Bind ViewModel.SearchCommand}" />
+            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="16">
+                <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                    <Border Grid.Column="0"
+                            Width="4"
+                            CornerRadius="2"
+                            Height="48"
+                            Background="{StaticResource AccentGradientBrush}"
+                            VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
+                        <TextBlock Text="动词活用查询"
+                                   FontSize="26"
+                                   FontFamily="{StaticResource AppFontFamilyBold}"
+                                   Foreground="#0F172A" />
+                        <TextBlock Text="输入辞書形，一键查看各类活用形式"
+                                   FontSize="13"
+                                   Foreground="#64748B" />
+                    </StackPanel>
                 </Grid>
-            </Border>
 
-            <Border Grid.Row="2"
-                    Padding="18"
-                    CornerRadius="22"
-                    Background="#ffffff"
-                    BorderBrush="#e2e8f0"
-                    BorderThickness="1">
-                <Grid>
-                    <TextBlock Text="结果"
-                               FontSize="18"
+                <Border Grid.Column="1"
+                        Visibility="{x:Bind ViewModel.VerbTypeBadgeVisibility, Mode=OneWay}"
+                        CornerRadius="8"
+                        Padding="16,7"
+                        Background="{StaticResource AccentGradientBrush}"
+                        VerticalAlignment="Center">
+                    <TextBlock Text="{x:Bind ViewModel.VerbTypeText, Mode=OneWay}"
+                               Foreground="White"
+                               FontSize="13"
                                FontWeight="SemiBold"
-                               Foreground="#0f172a"
-                               HorizontalAlignment="Left"
-                               VerticalAlignment="Top" />
+                               VerticalAlignment="Center" />
+                </Border>
+            </Grid>
 
-                    <TextBlock Text="{x:Bind ViewModel.CenterMessage, Mode=OneWay}"
-                               FontSize="18"
-                               FontWeight="SemiBold"
-                               Foreground="#94a3b8"
-                               HorizontalAlignment="Center"
-                               VerticalAlignment="Center"
-                               Visibility="{x:Bind ViewModel.CenterMessageVisibility, Mode=OneWay}" />
+            <Grid Grid.Row="1">
+                <Border x:Name="SearchBorder"
+                        CornerRadius="14"
+                        Background="#FFFFFF"
+                        BorderBrush="#E2E8F0"
+                        BorderThickness="1"
+                        Padding="6,5,6,5">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                        <FontIcon Grid.Column="0"
+                                  Glyph="&#xE721;"
+                                  FontSize="16"
+                                  Foreground="#94A3B8"
+                                  Margin="12,0,0,0"
+                                  VerticalAlignment="Center" />
+                        <TextBox Grid.Column="1"
+                                 x:Name="InputBox"
+                                 Style="{StaticResource BorderlessTextBoxStyle}"
+                                 PlaceholderText="例如：書く、食べる、する、来る"
+                                 FontSize="15"
+                                 Padding="10,0,0,0"
+                                 Text="{x:Bind ViewModel.InputWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                 KeyDown="InputBox_KeyDown"
+                                 GotFocus="InputBox_GotFocus"
+                                 LostFocus="InputBox_LostFocus" />
+                        <Button Grid.Column="2"
+                                Style="{StaticResource IconButtonStyle}"
+                                Visibility="{x:Bind ViewModel.HasInput, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                Command="{x:Bind ViewModel.ClearInputCommand}">
+                            <FontIcon Glyph="&#xE711;"
+                                      FontSize="12"
+                                      Foreground="#94A3B8" />
+                        </Button>
+                        <Button Grid.Column="3"
+                                Style="{StaticResource AccentButtonStyle}"
+                                Margin="4,0,0,0"
+                                Command="{x:Bind ViewModel.SearchCommand}">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE721;"
+                                          FontSize="14"
+                                          Foreground="White"
+                                          VerticalAlignment="Center" />
+                                <TextBlock Text="查询"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Button>
+                    </Grid>
+                </Border>
+            </Grid>
 
-                    <ListView ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"
-                              BorderThickness="0"
-                              Background="Transparent"
-                              Padding="0"
-                              Margin="0,28,0,0"
-                              SelectionMode="None"
-                              IsItemClickEnabled="False"
-                              Visibility="{x:Bind ViewModel.HasResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
-                        <ListView.ItemTemplate>
-                            <DataTemplate x:DataType="models:VerbConjugationItem">
-                                <Border Margin="0,0,0,10"
-                                        Padding="14,12"
-                                        CornerRadius="16"
-                                        Background="#f8fafc"
-                                        BorderBrush="#e2e8f0"
-                                        BorderThickness="1">
-                                    <Grid ColumnDefinitions="120,*,Auto">
-                                        <TextBlock Text="{x:Bind FormName}"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold"
-                                                   Foreground="#334155" />
-                                        <TextBlock Grid.Column="1"
-                                                   Text="{x:Bind FormValue}"
-                                                   FontSize="13"
-                                                   Foreground="#0f172a" />
-                                        <TextBlock Grid.Column="2"
-                                                   Text="{x:Bind AvailabilityText}"
-                                                   FontSize="12"
-                                                   Foreground="#94a3b8"
-                                                   HorizontalAlignment="Right" />
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+            <Border x:Name="ResultsPanel"
+                    Grid.Row="2"
+                    CornerRadius="18"
+                    Background="#FFFFFF"
+                    BorderBrush="#E2E8F0"
+                    BorderThickness="1"
+                    Padding="22,18,22,18">
+                <Grid RowDefinitions="Auto,*">
+                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                            <TextBlock Text="活用形式"
+                                       FontSize="15"
+                                       FontFamily="{StaticResource AppFontFamilyMedium}"
+                                       Foreground="#0F172A"
+                                       VerticalAlignment="Center" />
+                            <TextBlock Text="{x:Bind ViewModel.ResultsCountText, Mode=OneWay}"
+                                       FontSize="12.5"
+                                       Foreground="#94A3B8"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
+                        <TextBlock Grid.Column="1"
+                                   Text="点击卡片复制结果"
+                                   FontSize="11.5"
+                                   Foreground="#CBD5E1"
+                                   VerticalAlignment="Center" />
+                    </Grid>
+
+                    <Grid Grid.Row="1" Margin="0,16,0,0">
+                        <ScrollViewer Visibility="{x:Bind ViewModel.HasResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                      HorizontalScrollBarVisibility="Disabled"
+                                      HorizontalScrollMode="Disabled"
+                                      VerticalScrollBarVisibility="Auto"
+                                      Padding="0">
+                            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"
+                                           ItemTemplate="{StaticResource FormCardTemplate}"
+                                           Layout="{StaticResource FormGridLayout}" />
+                        </ScrollViewer>
+
+                        <StackPanel Visibility="{x:Bind ViewModel.CenterMessageVisibility, Mode=OneWay}"
+                                    HorizontalAlignment="Center"
+                                    VerticalAlignment="Center"
+                                    Spacing="14">
+                            <Grid HorizontalAlignment="Center">
+                                <Border Width="60" Height="60" CornerRadius="30"
+                                        Background="#EEF2FF"
+                                        Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
+                                <Border Width="60" Height="60" CornerRadius="30"
+                                        Background="#FFF1F2"
+                                        Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                                <FontIcon Glyph="&#xE721;"
+                                          FontSize="26"
+                                          Foreground="#6366F1"
+                                          Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}"
+                                          HorizontalAlignment="Center"
+                                          VerticalAlignment="Center" />
+                                <TextBlock Text="!"
+                                           FontSize="30"
+                                           FontWeight="Bold"
+                                           FontFamily="{StaticResource AppFontFamilyBold}"
+                                           Foreground="#E11D48"
+                                           Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                            </Grid>
+                            <StackPanel HorizontalAlignment="Center" Spacing="5">
+                                <TextBlock Text="{x:Bind ViewModel.CenterTitle, Mode=OneWay}"
+                                           FontSize="16"
+                                           FontWeight="SemiBold"
+                                           FontFamily="{StaticResource AppFontFamilyMedium}"
+                                           Foreground="#334155"
+                                           HorizontalAlignment="Center" />
+                                <TextBlock Text="{x:Bind ViewModel.CenterSubtitle, Mode=OneWay}"
+                                           FontSize="13"
+                                           Foreground="#94A3B8"
+                                           HorizontalAlignment="Center"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           MaxWidth="340" />
+                            </StackPanel>
+                        </StackPanel>
+
+                        <Border x:Name="CopyFeedbackBorder"
+                                Visibility="Collapsed"
+                                Opacity="0"
+                                CornerRadius="8"
+                                Background="#0F172A"
+                                Padding="16,9"
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Bottom"
+                                Margin="0,0,0,8">
+                            <StackPanel Orientation="Horizontal" Spacing="8">
+                                <FontIcon Glyph="&#xE73E;"
+                                          FontSize="13"
+                                          Foreground="#34D399"
+                                          VerticalAlignment="Center" />
+                                <TextBlock x:Name="CopyFeedbackText"
+                                           FontSize="12.5"
+                                           Foreground="White"
+                                           VerticalAlignment="Center" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
                 </Grid>
             </Border>
         </Grid>

@@ -13,6 +13,9 @@
             </ResourceDictionary.MergedDictionaries>
 
             <FontFamily x:Key="AppFontFamily">ms-appx:///Assets/Fonts/HarmonyOS_SansSC_Regular.ttf#HarmonyOS Sans SC</FontFamily>
+            <FontFamily x:Key="AppFontFamilyBold">ms-appx:///Assets/Fonts/HarmonyOS_SansSC_Bold.ttf#HarmonyOS Sans SC</FontFamily>
+            <FontFamily x:Key="AppFontFamilyMedium">ms-appx:///Assets/Fonts/HarmonyOS_SansSC_Medium.ttf#HarmonyOS Sans SC</FontFamily>
+            <FontFamily x:Key="AppFontFamilyLight">ms-appx:///Assets/Fonts/HarmonyOS_SansSC_Light.ttf#HarmonyOS Sans SC</FontFamily>
             <converters:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
             <Style TargetType="TextBlock">

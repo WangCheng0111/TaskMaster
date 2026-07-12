@@ -16,14 +16,36 @@ public partial class SamplePage1ViewModel : ObservableObject
     public string InputWord
     {
         get => inputWord;
-        set => SetProperty(ref inputWord, value);
+        set
+        {
+            if (SetProperty(ref inputWord, value))
+            {
+                OnPropertyChanged(nameof(HasInput));
+            }
+        }
     }
 
-    private string centerMessage = "请输入动词";
-    public string CenterMessage
+    public bool HasInput => !string.IsNullOrWhiteSpace(InputWord);
+
+    private string centerTitle = "开始查询活用形式";
+    public string CenterTitle
     {
-        get => centerMessage;
-        set => SetProperty(ref centerMessage, value);
+        get => centerTitle;
+        set => SetProperty(ref centerTitle, value);
+    }
+
+    private string centerSubtitle = "输入日语动词的辞書形，例如 書く、食べる、する、来る";
+    public string CenterSubtitle
+    {
+        get => centerSubtitle;
+        set => SetProperty(ref centerSubtitle, value);
+    }
+
+    private bool isError;
+    public bool IsError
+    {
+        get => isError;
+        set => SetProperty(ref isError, value);
     }
 
     private Visibility centerMessageVisibility = Visibility.Visible;
@@ -47,33 +69,82 @@ public partial class SamplePage1ViewModel : ObservableObject
         set => SetProperty(ref hasResults, value);
     }
 
+    private string verbTypeText = string.Empty;
+    public string VerbTypeText
+    {
+        get => verbTypeText;
+        set => SetProperty(ref verbTypeText, value);
+    }
+
+    private Visibility verbTypeBadgeVisibility = Visibility.Collapsed;
+    public Visibility VerbTypeBadgeVisibility
+    {
+        get => verbTypeBadgeVisibility;
+        set => SetProperty(ref verbTypeBadgeVisibility, value);
+    }
+
+    private string resultsCountText = string.Empty;
+    public string ResultsCountText
+    {
+        get => resultsCountText;
+        set => SetProperty(ref resultsCountText, value);
+    }
+
     [RelayCommand]
     private void Search()
     {
         var input = InputWord.Trim();
         if (string.IsNullOrWhiteSpace(input))
         {
-            Forms.Clear();
-            HasResults = false;
-            CenterMessage = "请输入动词";
-            CenterMessageVisibility = Visibility.Visible;
+            ResetToEmpty("开始查询活用形式", "输入日语动词的辞書形，例如 書く、食べる、する、来る");
             return;
         }
 
         var verbType = verbClassifier.Classify(input);
         if (verbType == VerbType.Unknown)
         {
-            Forms.Clear();
-            HasResults = false;
-            CenterMessage = "你输入的不是日语动词";
-            CenterMessageVisibility = Visibility.Visible;
+            ResetToEmpty("无法识别为日语动词", "请检查输入是否为日语动词的辞書形");
+            IsError = true;
             return;
         }
 
         var result = verbConjugationService.GetForms(input);
         Forms = new ObservableCollection<VerbConjugationItem>(result.Forms);
         HasResults = Forms.Count > 0;
-        CenterMessage = string.Empty;
+        CenterTitle = string.Empty;
+        CenterSubtitle = string.Empty;
         CenterMessageVisibility = Visibility.Collapsed;
+        IsError = false;
+        VerbTypeText = GetVerbTypeDisplay(verbType);
+        VerbTypeBadgeVisibility = Visibility.Visible;
+        ResultsCountText = $"· {Forms.Count} 项";
     }
+
+    [RelayCommand]
+    private void ClearInput()
+    {
+        InputWord = string.Empty;
+    }
+
+    private void ResetToEmpty(string title, string subtitle)
+    {
+        Forms.Clear();
+        HasResults = false;
+        CenterTitle = title;
+        CenterSubtitle = subtitle;
+        CenterMessageVisibility = Visibility.Visible;
+        IsError = false;
+        VerbTypeText = string.Empty;
+        VerbTypeBadgeVisibility = Visibility.Collapsed;
+        ResultsCountText = string.Empty;
+    }
+
+    private static string GetVerbTypeDisplay(VerbType verbType) => verbType switch
+    {
+        VerbType.Ichidan => "一段动词",
+        VerbType.Godan => "五段动词",
+        VerbType.Suru => "サ行变格",
+        VerbType.Kuru => "カ行变格",
+        _ => string.Empty
+    };
 }

@@ -47,8 +47,6 @@ namespace TaskMaster
         private static readonly Windows.UI.Color DefaultIconFocusColor = Windows.UI.Color.FromArgb(255, 45, 45, 45);
         private static readonly TimeSpan AnimationDuration = TimeSpan.FromSeconds(0.2);
         private bool _isWindowFocused = true;
-        //private readonly string _maximizeGlyph = "\uE922";
-        //private readonly string _restoreGlyph = "\uE923";
         private readonly Windows.UI.Color _titleInactiveColor = Windows.UI.Color.FromArgb(255, 160, 160, 160);
         private static readonly Windows.UI.Color TitleDefaultColor = Windows.UI.Color.FromArgb(255, 45, 45, 45);
         private FontIcon? _titleIcon;
@@ -61,7 +59,7 @@ namespace TaskMaster
             ExtendsContentIntoTitleBar = true;
             SetTitleBar(AppTitleBar);
             AppWindow.TitleBar.PreferredHeightOption = TitleBarHeightOption.Collapsed;
-            MoveAndCenterWindowOnScreen(new SizeInt32(1200, 800));
+            MoveAndCenterWindowOnScreen(new SizeInt32(1500, 900));
             AppWindow.Changed += AppWindow_Changed;
             Activated += MainWindow_Activated;
 

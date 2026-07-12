@@ -14,6 +14,12 @@ public sealed class VerbClassifier : IVerbClassifier
             return VerbType.Unknown;
         }
 
+        // 日語动词辞書形至少需要2个字符（詞幹 + 語尾）
+        if (word.Length < 2)
+        {
+            return VerbType.Unknown;
+        }
+
         if (specialVerbRepository.TryGet(word, out var definition))
         {
             return definition.VerbType;

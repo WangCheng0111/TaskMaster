@@ -15,13 +15,26 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
             VerbType.Kuru => BuildKuruForms(),
             VerbType.Ichidan => BuildIchidanForms(word),
             VerbType.Godan => BuildGodanForms(word),
-            _ => BuildUnknownForms()
+            _ => BuildUnavailableForms()
         };
     }
 
-    private static List<VerbConjugationItem> BuildUnknownForms()
+    private static List<VerbConjugationItem> BuildUnavailableForms()
     {
-        return BuildUnavailableForms();
+        return new List<VerbConjugationItem>
+        {
+            new() { FormName = "ます形", FormValue = "无" },
+            new() { FormName = "て形", FormValue = "无" },
+            new() { FormName = "た形", FormValue = "无" },
+            new() { FormName = "ない形", FormValue = "无" },
+            new() { FormName = "仮定形", FormValue = "无" },
+            new() { FormName = "禁止形", FormValue = "无" },
+            new() { FormName = "使役形", FormValue = "无" },
+            new() { FormName = "使役受身形", FormValue = "无" },
+            new() { FormName = "受身形", FormValue = "无" },
+            new() { FormName = "可能形", FormValue = "无" },
+            new() { FormName = "意志形", FormValue = "无" }
+        };
     }
 
     private static List<VerbConjugationItem> BuildIchidanForms(string word)
@@ -29,17 +42,17 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
         var stem = word.EndsWith("る") && word.Length > 1 ? word[..^1] : word;
         return new List<VerbConjugationItem>
         {
-            new() { FormName = "ます形", FormValue = stem + "ます", IsAvailable = true },
-            new() { FormName = "て形", FormValue = stem + "て", IsAvailable = true },
-            new() { FormName = "た形", FormValue = stem + "た", IsAvailable = true },
-            new() { FormName = "ない形", FormValue = stem + "ない", IsAvailable = true },
-            new() { FormName = "仮定形", FormValue = stem + "れば", IsAvailable = true },
-            new() { FormName = "禁止形", FormValue = stem + "るな", IsAvailable = true },
-            new() { FormName = "使役形", FormValue = stem + "させる", IsAvailable = true },
-            new() { FormName = "使役受身形", FormValue = stem + "させられる", IsAvailable = true },
-            new() { FormName = "受身形", FormValue = stem + "られる", IsAvailable = true },
-            new() { FormName = "可能形", FormValue = stem + "られる", IsAvailable = true },
-            new() { FormName = "意志形", FormValue = stem + "よう", IsAvailable = true }
+            new() { FormName = "ます形", FormValue = stem + "ます" },
+            new() { FormName = "て形", FormValue = stem + "て" },
+            new() { FormName = "た形", FormValue = stem + "た" },
+            new() { FormName = "ない形", FormValue = stem + "ない" },
+            new() { FormName = "仮定形", FormValue = stem + "れば" },
+            new() { FormName = "禁止形", FormValue = stem + "るな" },
+            new() { FormName = "使役形", FormValue = stem + "させる" },
+            new() { FormName = "使役受身形", FormValue = stem + "させられる" },
+            new() { FormName = "受身形", FormValue = stem + "られる" },
+            new() { FormName = "可能形", FormValue = stem + "られる" },
+            new() { FormName = "意志形", FormValue = stem + "よう" }
         };
     }
 
@@ -47,17 +60,17 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
     {
         return new List<VerbConjugationItem>
         {
-            new() { FormName = "ます形", FormValue = "します", IsAvailable = true },
-            new() { FormName = "て形", FormValue = "して", IsAvailable = true },
-            new() { FormName = "た形", FormValue = "した", IsAvailable = true },
-            new() { FormName = "ない形", FormValue = "しない", IsAvailable = true },
-            new() { FormName = "仮定形", FormValue = "すれば", IsAvailable = true },
-            new() { FormName = "禁止形", FormValue = "するな", IsAvailable = true },
-            new() { FormName = "使役形", FormValue = "させる", IsAvailable = true },
-            new() { FormName = "使役受身形", FormValue = "させられる", IsAvailable = true },
-            new() { FormName = "受身形", FormValue = "される", IsAvailable = true },
-            new() { FormName = "可能形", FormValue = "できる", IsAvailable = true },
-            new() { FormName = "意志形", FormValue = "しよう", IsAvailable = true }
+            new() { FormName = "ます形", FormValue = "します" },
+            new() { FormName = "て形", FormValue = "して" },
+            new() { FormName = "た形", FormValue = "した" },
+            new() { FormName = "ない形", FormValue = "しない" },
+            new() { FormName = "仮定形", FormValue = "すれば" },
+            new() { FormName = "禁止形", FormValue = "するな" },
+            new() { FormName = "使役形", FormValue = "させる" },
+            new() { FormName = "使役受身形", FormValue = "させられる" },
+            new() { FormName = "受身形", FormValue = "される" },
+            new() { FormName = "可能形", FormValue = "できる" },
+            new() { FormName = "意志形", FormValue = "しよう" }
         };
     }
 
@@ -65,17 +78,17 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
     {
         return new List<VerbConjugationItem>
         {
-            new() { FormName = "ます形", FormValue = "来ます", IsAvailable = true },
-            new() { FormName = "て形", FormValue = "来て", IsAvailable = true },
-            new() { FormName = "た形", FormValue = "来た", IsAvailable = true },
-            new() { FormName = "ない形", FormValue = "来ない", IsAvailable = true },
-            new() { FormName = "仮定形", FormValue = "来れば", IsAvailable = true },
-            new() { FormName = "禁止形", FormValue = "来るな", IsAvailable = true },
-            new() { FormName = "使役形", FormValue = "来させる", IsAvailable = true },
-            new() { FormName = "使役受身形", FormValue = "来させられる", IsAvailable = true },
-            new() { FormName = "受身形", FormValue = "来られる", IsAvailable = true },
-            new() { FormName = "可能形", FormValue = "来られる", IsAvailable = true },
-            new() { FormName = "意志形", FormValue = "来よう", IsAvailable = true }
+            new() { FormName = "ます形", FormValue = "来ます" },
+            new() { FormName = "て形", FormValue = "来て" },
+            new() { FormName = "た形", FormValue = "来た" },
+            new() { FormName = "ない形", FormValue = "来ない" },
+            new() { FormName = "仮定形", FormValue = "来れば" },
+            new() { FormName = "禁止形", FormValue = "来るな" },
+            new() { FormName = "使役形", FormValue = "来させる" },
+            new() { FormName = "使役受身形", FormValue = "来させられる" },
+            new() { FormName = "受身形", FormValue = "来られる" },
+            new() { FormName = "可能形", FormValue = "来られる" },
+            new() { FormName = "意志形", FormValue = "来よう" }
         };
     }
 
@@ -165,39 +178,19 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
             _ => "无"
         };
 
-        var canTeOrTa = teForm != "无" && taForm != "无";
-
         return new List<VerbConjugationItem>
         {
-            new() { FormName = "ます形", FormValue = masuStem + "ます", IsAvailable = true },
-            new() { FormName = "て形", FormValue = canTeOrTa ? teForm : "无", IsAvailable = canTeOrTa },
-            new() { FormName = "た形", FormValue = canTeOrTa ? taForm : "无", IsAvailable = canTeOrTa },
-            new() { FormName = "ない形", FormValue = aStem + "ない", IsAvailable = true },
-            new() { FormName = "仮定形", FormValue = eStem + "ば", IsAvailable = true },
-            new() { FormName = "禁止形", FormValue = word + "な", IsAvailable = true },
-            new() { FormName = "使役形", FormValue = aStem + "せる", IsAvailable = true },
-            new() { FormName = "使役受身形", FormValue = aStem + "せられる", IsAvailable = true },
-            new() { FormName = "受身形", FormValue = aStem + "れる", IsAvailable = true },
-            new() { FormName = "可能形", FormValue = eStem + "る", IsAvailable = true },
-            new() { FormName = "意志形", FormValue = oStem + "う", IsAvailable = true }
-        };
-    }
-
-    private static List<VerbConjugationItem> BuildUnavailableForms()
-    {
-        return new List<VerbConjugationItem>
-        {
-            new() { FormName = "ます形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "て形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "た形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "ない形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "仮定形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "禁止形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "使役形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "使役受身形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "受身形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "可能形", FormValue = "无", IsAvailable = false },
-            new() { FormName = "意志形", FormValue = "无", IsAvailable = false }
+            new() { FormName = "ます形", FormValue = masuStem + "ます" },
+            new() { FormName = "て形", FormValue = teForm },
+            new() { FormName = "た形", FormValue = taForm },
+            new() { FormName = "ない形", FormValue = aStem + "ない" },
+            new() { FormName = "仮定形", FormValue = eStem + "ば" },
+            new() { FormName = "禁止形", FormValue = word + "な" },
+            new() { FormName = "使役形", FormValue = aStem + "せる" },
+            new() { FormName = "使役受身形", FormValue = aStem + "せられる" },
+            new() { FormName = "受身形", FormValue = aStem + "れる" },
+            new() { FormName = "可能形", FormValue = eStem + "る" },
+            new() { FormName = "意志形", FormValue = oStem + "う" }
         };
     }
 }
