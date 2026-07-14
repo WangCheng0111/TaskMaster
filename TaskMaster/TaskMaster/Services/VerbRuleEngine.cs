@@ -11,8 +11,8 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
 
         return verbType switch
         {
-            VerbType.Suru => BuildSuruForms(),
-            VerbType.Kuru => BuildKuruForms(),
+            VerbType.Suru => BuildSuruForms(word),
+            VerbType.Kuru => BuildKuruForms(word),
             VerbType.Ichidan => BuildIchidanForms(word),
             VerbType.Godan => BuildGodanForms(word),
             _ => BuildUnavailableForms()
@@ -56,39 +56,41 @@ public sealed class VerbRuleEngine : IVerbRuleEngine
         };
     }
 
-    private static List<VerbConjugationItem> BuildSuruForms()
+    private static List<VerbConjugationItem> BuildSuruForms(string word)
     {
+        var stem = word.EndsWith("する") && word.Length > 2 ? word[..^2] : string.Empty;
         return new List<VerbConjugationItem>
         {
-            new() { FormName = "ます形", FormValue = "します" },
-            new() { FormName = "て形", FormValue = "して" },
-            new() { FormName = "た形", FormValue = "した" },
-            new() { FormName = "ない形", FormValue = "しない" },
-            new() { FormName = "仮定形", FormValue = "すれば" },
-            new() { FormName = "禁止形", FormValue = "するな" },
-            new() { FormName = "使役形", FormValue = "させる" },
-            new() { FormName = "使役受身形", FormValue = "させられる" },
-            new() { FormName = "受身形", FormValue = "される" },
-            new() { FormName = "可能形", FormValue = "できる" },
-            new() { FormName = "意志形", FormValue = "しよう" }
+            new() { FormName = "ます形", FormValue = stem + "します" },
+            new() { FormName = "て形", FormValue = stem + "して" },
+            new() { FormName = "た形", FormValue = stem + "した" },
+            new() { FormName = "ない形", FormValue = stem + "しない" },
+            new() { FormName = "仮定形", FormValue = stem + "すれば" },
+            new() { FormName = "禁止形", FormValue = stem + "するな" },
+            new() { FormName = "使役形", FormValue = stem + "させる" },
+            new() { FormName = "使役受身形", FormValue = stem + "させられる" },
+            new() { FormName = "受身形", FormValue = stem + "される" },
+            new() { FormName = "可能形", FormValue = stem + "できる" },
+            new() { FormName = "意志形", FormValue = stem + "しよう" }
         };
     }
 
-    private static List<VerbConjugationItem> BuildKuruForms()
+    private static List<VerbConjugationItem> BuildKuruForms(string word)
     {
+        var stem = word.EndsWith("来る") && word.Length > 2 ? word[..^2] : string.Empty;
         return new List<VerbConjugationItem>
         {
-            new() { FormName = "ます形", FormValue = "来ます" },
-            new() { FormName = "て形", FormValue = "来て" },
-            new() { FormName = "た形", FormValue = "来た" },
-            new() { FormName = "ない形", FormValue = "来ない" },
-            new() { FormName = "仮定形", FormValue = "来れば" },
-            new() { FormName = "禁止形", FormValue = "来るな" },
-            new() { FormName = "使役形", FormValue = "来させる" },
-            new() { FormName = "使役受身形", FormValue = "来させられる" },
-            new() { FormName = "受身形", FormValue = "来られる" },
-            new() { FormName = "可能形", FormValue = "来られる" },
-            new() { FormName = "意志形", FormValue = "来よう" }
+            new() { FormName = "ます形", FormValue = stem + "来ます" },
+            new() { FormName = "て形", FormValue = stem + "来て" },
+            new() { FormName = "た形", FormValue = stem + "来た" },
+            new() { FormName = "ない形", FormValue = stem + "来ない" },
+            new() { FormName = "仮定形", FormValue = stem + "来れば" },
+            new() { FormName = "禁止形", FormValue = stem + "来るな" },
+            new() { FormName = "使役形", FormValue = stem + "来させる" },
+            new() { FormName = "使役受身形", FormValue = stem + "来させられる" },
+            new() { FormName = "受身形", FormValue = stem + "来られる" },
+            new() { FormName = "可能形", FormValue = stem + "来られる" },
+            new() { FormName = "意志形", FormValue = stem + "来よう" }
         };
     }
 
