@@ -6,35 +6,122 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:viewModels="using:TaskMaster.ViewModels"
     xmlns:models="using:TaskMaster.Models"
-    mc:Ignorable="d">
+    mc:Ignorable="d"
+    Loaded="Page_Loaded">
 
     <Page.DataContext>
         <viewModels:SamplePage1ViewModel />
     </Page.DataContext>
 
     <Page.Resources>
-        <LinearGradientBrush x:Key="AccentGradientBrush" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#6366f1" Offset="0" />
-            <GradientStop Color="#8b5cf6" Offset="1" />
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="AccentGradientBrushHover" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#4f46e5" Offset="0" />
-            <GradientStop Color="#7c3aed" Offset="1" />
-        </LinearGradientBrush>
-        <LinearGradientBrush x:Key="AccentGradientBrushPressed" StartPoint="0,0" EndPoint="1,1">
-            <GradientStop Color="#4338ca" Offset="0" />
-            <GradientStop Color="#6d28d9" Offset="1" />
-        </LinearGradientBrush>
+        <!-- ═══════════════════════════════════════════════════════════
+             EASING — ExponentialEase gives Apple-like "settle" feel
+             ═══════════════════════════════════════════════════════════ -->
+        <ExponentialEase x:Key="AppleEaseOut" EasingMode="EaseOut" Exponent="3.5" />
+        <ExponentialEase x:Key="AppleEaseOutStrong" EasingMode="EaseOut" Exponent="5" />
 
+        <!-- ═══════════════════════════════════════════════════════════
+             COLOR — iOS system palette, indigo accent
+             ═══════════════════════════════════════════════════════════ -->
+        <SolidColorBrush x:Key="SystemBackgroundBrush" Color="#F2F2F7" />
+        <SolidColorBrush x:Key="LabelBrush" Color="#1C1C1E" />
+        <SolidColorBrush x:Key="SecondaryLabelBrush" Color="#8E8E93" />
+        <SolidColorBrush x:Key="TertiaryLabelBrush" Color="#C7C7CC" />
+        <SolidColorBrush x:Key="SeparatorBrush" Color="#E5E5EA" />
+        <SolidColorBrush x:Key="AccentBrush" Color="#5856D6" />
+        <SolidColorBrush x:Key="SuccessBrush" Color="#34C759" />
+        <SolidColorBrush x:Key="ErrorBrush" Color="#FF3B30" />
+
+        <!-- ═══════════════════════════════════════════════════════════
+             PAGE ENTRANCE — cascade header → search → results
+             ═══════════════════════════════════════════════════════════ -->
+        <Storyboard x:Key="PageEntranceStoryboard">
+            <DoubleAnimation Storyboard.TargetName="HeaderGrid"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.55"
+                             BeginTime="0:0:0"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="HeaderTranslate"
+                             Storyboard.TargetProperty="Y"
+                             From="10" To="0" Duration="0:0:0.55"
+                             BeginTime="0:0:0"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="SearchBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.55"
+                             BeginTime="0:0:0.08"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="SearchTranslate"
+                             Storyboard.TargetProperty="Y"
+                             From="10" To="0" Duration="0:0:0.55"
+                             BeginTime="0:0:0.08"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="ResultsPanel"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.6"
+                             BeginTime="0:0:0.16"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="ResultsTranslate"
+                             Storyboard.TargetProperty="Y"
+                             From="14" To="0" Duration="0:0:0.6"
+                             BeginTime="0:0:0.16"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+        </Storyboard>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             TOAST — scale-in (spring-like), scale-out (snappy exit)
+             ═══════════════════════════════════════════════════════════ -->
+        <Storyboard x:Key="ToastInStoryboard">
+            <DoubleAnimation Storyboard.TargetName="ToastScale"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="0.92" To="1" Duration="0:0:0.45"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="ToastScale"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="0.92" To="1" Duration="0:0:0.45"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="CopyFeedbackBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             From="0" To="1" Duration="0:0:0.3"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+        </Storyboard>
+
+        <Storyboard x:Key="ToastOutStoryboard">
+            <DoubleAnimation Storyboard.TargetName="ToastScale"
+                             Storyboard.TargetProperty="ScaleX"
+                             From="1" To="0.95" Duration="0:0:0.25"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="ToastScale"
+                             Storyboard.TargetProperty="ScaleY"
+                             From="1" To="0.95" Duration="0:0:0.25"
+                             EasingFunction="{StaticResource AppleEaseOut}" />
+            <DoubleAnimation Storyboard.TargetName="CopyFeedbackBorder"
+                             Storyboard.TargetProperty="Opacity"
+                             From="1" To="0" Duration="0:0:0.25" />
+        </Storyboard>
+
+        <!-- ═══════════════════════════════════════════════════════════
+             LAYOUT
+             ═══════════════════════════════════════════════════════════ -->
+        <UniformGridLayout x:Key="FormGridLayout"
+                           MinItemWidth="200"
+                           MinItemHeight="92"
+                           MinRowSpacing="12"
+                           MinColumnSpacing="12" />
+
+        <!-- ═══════════════════════════════════════════════════════════
+             BORDERLESS TEXTBOX — clean, no chrome
+             ═══════════════════════════════════════════════════════════ -->
         <Style x:Key="BorderlessTextBoxStyle" TargetType="TextBox">
-            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="MinHeight" Value="40" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="#0F172A" />
-            <Setter Property="PlaceholderForeground" Value="#94A3B8" />
-            <Setter Property="SelectionHighlightColor" Value="#6366F1" />
+            <Setter Property="Foreground" Value="#1C1C1E" />
+            <Setter Property="PlaceholderForeground" Value="#C7C7CC" />
+            <Setter Property="SelectionHighlightColor" Value="#5856D6" />
+            <Setter Property="FontSize" Value="15" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="TextBox">
@@ -50,7 +137,7 @@
                                     <VisualState x:Name="Focused" />
                                     <VisualState x:Name="Disabled">
                                         <VisualState.Setters>
-                                            <Setter Target="ContentElement.Foreground" Value="#94A3B8" />
+                                            <Setter Target="ContentElement.Foreground" Value="#C7C7CC" />
                                         </VisualState.Setters>
                                     </VisualState>
                                 </VisualStateGroup>
@@ -86,32 +173,19 @@
             </Setter>
         </Style>
 
-        <UniformGridLayout x:Key="FormGridLayout"
-                           MinItemWidth="208"
-                           MinItemHeight="98"
-                           MinRowSpacing="12"
-                           MinColumnSpacing="12" />
-
-        <Storyboard x:Key="FeedbackFadeInStoryboard">
-            <DoubleAnimation Storyboard.TargetName="CopyFeedbackBorder"
-                             Storyboard.TargetProperty="Opacity"
-                             From="0" To="1" Duration="0:0:0.18" />
-        </Storyboard>
-        <Storyboard x:Key="FeedbackFadeOutStoryboard">
-            <DoubleAnimation Storyboard.TargetName="CopyFeedbackBorder"
-                             Storyboard.TargetProperty="Opacity"
-                             From="1" To="0" Duration="0:0:0.22" />
-        </Storyboard>
-
-        <Style x:Key="AccentButtonStyle" TargetType="Button">
+        <!-- ═══════════════════════════════════════════════════════════
+             PRIMARY BUTTON — solid accent, scale-on-press
+             ═══════════════════════════════════════════════════════════ -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#5856D6" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="Background" Value="{StaticResource AccentGradientBrush}" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="Padding" Value="22,10" />
-            <Setter Property="CornerRadius" Value="11" />
+            <Setter Property="Padding" Value="20,10" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="FontSize" Value="14" />
             <Setter Property="FontWeight" Value="SemiBold" />
-            <Setter Property="MinHeight" Value="44" />
+            <Setter Property="FontFamily" Value="{StaticResource AppFontFamilyMedium}" />
+            <Setter Property="MinHeight" Value="40" />
             <Setter Property="UseSystemFocusVisuals" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
@@ -128,29 +202,29 @@
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal" />
                                     <VisualState x:Name="PointerOver">
-                                        <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AccentGradientBrushHover}" />
-                                            </ObjectAnimationUsingKeyFrames>
-                                        </Storyboard>
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#4F52CC" />
+                                        </VisualState.Setters>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
+                                        <VisualState.Setters>
+                                            <Setter Target="Root.Background" Value="#4547B5" />
+                                        </VisualState.Setters>
                                         <Storyboard>
-                                            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="Root" Storyboard.TargetProperty="Background">
-                                                <DiscreteObjectKeyFrame KeyTime="0" Value="{StaticResource AccentGradientBrushPressed}" />
-                                            </ObjectAnimationUsingKeyFrames>
                                             <DoubleAnimation Storyboard.TargetName="RootScale"
                                                              Storyboard.TargetProperty="ScaleX"
-                                                             To="0.97" Duration="0:0:0.08" />
+                                                             To="0.97" Duration="0:0:0.12"
+                                                             EasingFunction="{StaticResource AppleEaseOut}" />
                                             <DoubleAnimation Storyboard.TargetName="RootScale"
                                                              Storyboard.TargetProperty="ScaleY"
-                                                             To="0.97" Duration="0:0:0.08" />
+                                                             To="0.97" Duration="0:0:0.12"
+                                                             EasingFunction="{StaticResource AppleEaseOut}" />
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Disabled">
                                         <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="#E2E8F0" />
-                                            <Setter Target="ContentPresenter.Foreground" Value="#94A3B8" />
+                                            <Setter Target="Root.Background" Value="#E5E5EA" />
+                                            <Setter Target="ContentPresenter.Foreground" Value="#C7C7CC" />
                                         </VisualState.Setters>
                                     </VisualState>
                                 </VisualStateGroup>
@@ -169,33 +243,50 @@
             </Setter>
         </Style>
 
-        <Style x:Key="IconButtonStyle" TargetType="Button">
-            <Setter Property="Width" Value="34" />
-            <Setter Property="Height" Value="34" />
-            <Setter Property="CornerRadius" Value="17" />
+        <!-- ═══════════════════════════════════════════════════════════
+             CLEAR BUTTON — circular icon, subtle hover
+             ═══════════════════════════════════════════════════════════ -->
+        <Style x:Key="ClearButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="28" />
+            <Setter Property="Height" Value="28" />
+            <Setter Property="CornerRadius" Value="14" />
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
             <Setter Property="Padding" Value="0" />
-            <Setter Property="Foreground" Value="#94A3B8" />
+            <Setter Property="Foreground" Value="#8E8E93" />
             <Setter Property="UseSystemFocusVisuals" Value="True" />
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="Root"
                                 Background="{TemplateBinding Background}"
-                                CornerRadius="{TemplateBinding CornerRadius}">
+                                CornerRadius="{TemplateBinding CornerRadius}"
+                                RenderTransformOrigin="0.5,0.5">
+                            <Border.RenderTransform>
+                                <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1" />
+                            </Border.RenderTransform>
                             <VisualStateManager.VisualStateGroups>
                                 <VisualStateGroup x:Name="CommonStates">
                                     <VisualState x:Name="Normal" />
                                     <VisualState x:Name="PointerOver">
                                         <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="#F1F5F9" />
+                                            <Setter Target="Root.Background" Value="#E5E5EA" />
                                         </VisualState.Setters>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="#E2E8F0" />
+                                            <Setter Target="Root.Background" Value="#D1D1D6" />
                                         </VisualState.Setters>
+                                        <Storyboard>
+                                            <DoubleAnimation Storyboard.TargetName="RootScale"
+                                                             Storyboard.TargetProperty="ScaleX"
+                                                             To="0.9" Duration="0:0:0.1"
+                                                             EasingFunction="{StaticResource AppleEaseOut}" />
+                                            <DoubleAnimation Storyboard.TargetName="RootScale"
+                                                             Storyboard.TargetProperty="ScaleY"
+                                                             To="0.9" Duration="0:0:0.1"
+                                                             EasingFunction="{StaticResource AppleEaseOut}" />
+                                        </Storyboard>
                                     </VisualState>
                                 </VisualStateGroup>
                             </VisualStateManager.VisualStateGroups>
@@ -209,15 +300,18 @@
             </Setter>
         </Style>
 
+        <!-- ═══════════════════════════════════════════════════════════
+             FORM CARD — white surface, ThemeShadow depth, scale-on-press
+             ═══════════════════════════════════════════════════════════ -->
         <Style x:Key="FormCardButtonStyle" TargetType="Button">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="VerticalContentAlignment" Value="Stretch" />
-            <Setter Property="Padding" Value="16,13" />
+            <Setter Property="Padding" Value="16,14" />
             <Setter Property="CornerRadius" Value="14" />
             <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="BorderBrush" Value="#EEF2FF" />
+            <Setter Property="BorderBrush" Value="#0000000F" />
             <Setter Property="Background" Value="#FFFFFF" />
-            <Setter Property="MinHeight" Value="98" />
+            <Setter Property="MinHeight" Value="92" />
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="UseSystemFocusVisuals" Value="True" />
             <Setter Property="Template">
@@ -229,28 +323,30 @@
                                     <VisualState x:Name="Normal" />
                                     <VisualState x:Name="PointerOver">
                                         <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="#F5F3FF" />
-                                            <Setter Target="Root.BorderBrush" Value="#C7D2FE" />
+                                            <Setter Target="Root.Background" Value="#FAFAFC" />
+                                            <Setter Target="Root.BorderBrush" Value="#00000014" />
                                         </VisualState.Setters>
                                     </VisualState>
                                     <VisualState x:Name="Pressed">
                                         <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="#EDE9FE" />
-                                            <Setter Target="Root.BorderBrush" Value="#C7D2FE" />
+                                            <Setter Target="Root.Background" Value="#F5F5F7" />
+                                            <Setter Target="Root.BorderBrush" Value="#0000001A" />
                                         </VisualState.Setters>
                                         <Storyboard>
                                             <DoubleAnimation Storyboard.TargetName="RootScale"
                                                              Storyboard.TargetProperty="ScaleX"
-                                                             To="0.98" Duration="0:0:0.08" />
+                                                             To="0.97" Duration="0:0:0.12"
+                                                             EasingFunction="{StaticResource AppleEaseOut}" />
                                             <DoubleAnimation Storyboard.TargetName="RootScale"
                                                              Storyboard.TargetProperty="ScaleY"
-                                                             To="0.98" Duration="0:0:0.08" />
+                                                             To="0.97" Duration="0:0:0.12"
+                                                             EasingFunction="{StaticResource AppleEaseOut}" />
                                         </Storyboard>
                                     </VisualState>
                                     <VisualState x:Name="Disabled">
                                         <VisualState.Setters>
-                                            <Setter Target="Root.Background" Value="#F8FAFC" />
-                                            <Setter Target="Root.BorderBrush" Value="#E2E8F0" />
+                                            <Setter Target="Root.Background" Value="#F5F5F7" />
+                                            <Setter Target="Root.BorderBrush" Value="Transparent" />
                                         </VisualState.Setters>
                                     </VisualState>
                                 </VisualStateGroup>
@@ -265,7 +361,7 @@
                                     CornerRadius="{TemplateBinding CornerRadius}"
                                     Padding="{TemplateBinding Padding}"
                                     RenderTransformOrigin="0.5,0.5"
-                                    Translation="0,0,8">
+                                    Translation="0,0,6">
                                 <Border.RenderTransform>
                                     <ScaleTransform x:Name="RootScale" ScaleX="1" ScaleY="1" />
                                 </Border.RenderTransform>
@@ -283,245 +379,273 @@
             </Setter>
         </Style>
 
+        <!-- ═══════════════════════════════════════════════════════════
+             FORM CARD DATA TEMPLATE
+             Wrapper Grid handles entrance stagger; Button handles press
+             ═══════════════════════════════════════════════════════════ -->
         <DataTemplate x:Key="FormCardTemplate" x:DataType="models:VerbConjugationItem">
-            <Button Style="{StaticResource FormCardButtonStyle}"
-                    Click="FormCard_Click"
-                    Tag="{x:Bind FormValue}">
-                <Grid RowSpacing="8">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="*" />
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" ColumnDefinitions="Auto,*">
-                        <Border Grid.Column="0"
-                                Width="7" Height="7"
-                                CornerRadius="3.5"
-                                Background="{StaticResource AccentGradientBrush}"
-                                VerticalAlignment="Center" />
-                        <TextBlock Grid.Column="1"
+            <Grid Opacity="0">
+                <Grid.RenderTransform>
+                    <TranslateTransform Y="14" />
+                </Grid.RenderTransform>
+                <Button Style="{StaticResource FormCardButtonStyle}"
+                        Click="FormCard_Click"
+                        Tag="{x:Bind FormValue}">
+                    <Grid RowSpacing="6">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0"
                                    Text="{x:Bind FormName}"
-                                   Margin="8,0,0,0"
-                                   FontSize="12.5"
+                                   FontSize="12"
                                    FontWeight="SemiBold"
                                    FontFamily="{StaticResource AppFontFamilyMedium}"
-                                   Foreground="#6366F1"
+                                   Foreground="#5856D6"
+                                   CharacterSpacing="15"
                                    VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="1"
+                                   Text="{x:Bind FormValue}"
+                                   FontSize="20"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource AppFontFamilyMedium}"
+                                   Foreground="#1C1C1E"
+                                   CharacterSpacing="-5"
+                                   VerticalAlignment="Bottom"
+                                   TextWrapping="NoWrap"
+                                   TextTrimming="CharacterEllipsis" />
                     </Grid>
-                    <TextBlock Grid.Row="1"
-                               Text="{x:Bind FormValue}"
-                               FontSize="19"
-                               FontWeight="SemiBold"
-                               FontFamily="{StaticResource AppFontFamilyMedium}"
-                               Foreground="#0F172A"
-                               VerticalAlignment="Bottom"
-                               TextWrapping="NoWrap"
-                               TextTrimming="CharacterEllipsis" />
-                </Grid>
-            </Button>
+                </Button>
+            </Grid>
         </DataTemplate>
     </Page.Resources>
 
-    <Grid Padding="34,26,34,24">
-        <Grid.Background>
-            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                <GradientStop Color="#fbfcff" Offset="0" />
-                <GradientStop Color="#eef2ff" Offset="1" />
-            </LinearGradientBrush>
-        </Grid.Background>
+    <!-- ═══════════════════════════════════════════════════════════
+         PAGE — iOS grouped background, generous padding
+         ═══════════════════════════════════════════════════════════ -->
+    <Grid Background="{StaticResource SystemBackgroundBrush}"
+          Padding="40,36,40,32">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
 
-        <Grid RowSpacing="22">
+        <!-- ═══ Row 0: Header — Large title pattern ═══ -->
+        <Grid x:Name="HeaderGrid"
+              Grid.Row="0"
+              Opacity="0"
+              ColumnDefinitions="*,Auto"
+              ColumnSpacing="16">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="HeaderTranslate" Y="10" />
+            </Grid.RenderTransform>
+            <StackPanel Grid.Column="0" Spacing="5" VerticalAlignment="Center">
+                <TextBlock Text="动词活用查询"
+                           FontSize="30"
+                           FontWeight="SemiBold"
+                           FontFamily="{StaticResource AppFontFamilyMedium}"
+                           CharacterSpacing="-20"
+                           Foreground="#1C1C1E" />
+                <TextBlock Text="输入辞書形，一键查看各类活用形式"
+                           FontSize="14"
+                           FontFamily="{StaticResource AppFontFamily}"
+                           Foreground="#8E8E93" />
+            </StackPanel>
+            <Border Grid.Column="1"
+                    Visibility="{x:Bind ViewModel.VerbTypeBadgeVisibility, Mode=OneWay}"
+                    CornerRadius="14"
+                    Padding="14,6"
+                    Background="#1F5856D6"
+                    VerticalAlignment="Center">
+                <TextBlock Text="{x:Bind ViewModel.VerbTypeText, Mode=OneWay}"
+                           Foreground="#5856D6"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           FontFamily="{StaticResource AppFontFamilyMedium}"
+                           CharacterSpacing="5"
+                           VerticalAlignment="Center" />
+            </Border>
+        </Grid>
+
+        <!-- ═══ Row 1: Search field — Apple-style rounded input ═══ -->
+        <Border x:Name="SearchBorder"
+                Grid.Row="1"
+                Opacity="0"
+                CornerRadius="12"
+                Background="#FFFFFF"
+                BorderBrush="#E5E5EA"
+                BorderThickness="1"
+                Padding="4,3,4,3"
+                Margin="0,24,0,0">
+            <Border.RenderTransform>
+                <TranslateTransform x:Name="SearchTranslate" Y="10" />
+            </Border.RenderTransform>
+            <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+                <FontIcon Grid.Column="0"
+                          Glyph="&#xE721;"
+                          FontSize="16"
+                          Foreground="#C7C7CC"
+                          Margin="12,0,0,0"
+                          VerticalAlignment="Center" />
+                <TextBox Grid.Column="1"
+                         x:Name="InputBox"
+                         Style="{StaticResource BorderlessTextBoxStyle}"
+                         PlaceholderText="例如：書く、食べる、する、来る"
+                         FontSize="15"
+                         Padding="10,0,0,0"
+                         Text="{x:Bind ViewModel.InputWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                         KeyDown="InputBox_KeyDown"
+                         GotFocus="InputBox_GotFocus"
+                         LostFocus="InputBox_LostFocus" />
+                <Button Grid.Column="2"
+                        Style="{StaticResource ClearButtonStyle}"
+                        Margin="2,0,2,0"
+                        Visibility="{x:Bind ViewModel.HasInput, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        Command="{x:Bind ViewModel.ClearInputCommand}">
+                    <FontIcon Glyph="&#xE711;"
+                              FontSize="11"
+                              Foreground="#8E8E93" />
+                </Button>
+                <Button Grid.Column="3"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Command="{x:Bind ViewModel.SearchCommand}">
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <FontIcon Glyph="&#xE721;"
+                                  FontSize="13"
+                                  Foreground="White"
+                                  VerticalAlignment="Center" />
+                        <TextBlock Text="查询"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Button>
+            </Grid>
+        </Border>
+
+        <!-- ═══ Row 2: Results — cards on gray canvas with shadow depth ═══ -->
+        <Grid x:Name="ResultsPanel"
+              Grid.Row="2"
+              Opacity="0"
+              Margin="0,24,0,0">
+            <Grid.RenderTransform>
+                <TranslateTransform x:Name="ResultsTranslate" Y="14" />
+            </Grid.RenderTransform>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="16">
-                <Grid Grid.Column="0" ColumnDefinitions="Auto,*" ColumnSpacing="14">
-                    <Border Grid.Column="0"
-                            Width="4"
-                            CornerRadius="2"
-                            Height="48"
-                            Background="{StaticResource AccentGradientBrush}"
-                            VerticalAlignment="Center" />
-                    <StackPanel Grid.Column="1" Spacing="4" VerticalAlignment="Center">
-                        <TextBlock Text="动词活用查询"
-                                   FontSize="26"
-                                   FontFamily="{StaticResource AppFontFamilyBold}"
-                                   Foreground="#0F172A" />
-                        <TextBlock Text="输入辞書形，一键查看各类活用形式"
-                                   FontSize="13"
-                                   Foreground="#64748B" />
-                    </StackPanel>
-                </Grid>
-
-                <Border Grid.Column="1"
-                        Visibility="{x:Bind ViewModel.VerbTypeBadgeVisibility, Mode=OneWay}"
-                        CornerRadius="8"
-                        Padding="16,7"
-                        Background="{StaticResource AccentGradientBrush}"
-                        VerticalAlignment="Center">
-                    <TextBlock Text="{x:Bind ViewModel.VerbTypeText, Mode=OneWay}"
-                               Foreground="White"
+            <!-- Section header — iOS grouped style, hidden when no results -->
+            <Grid Grid.Row="0"
+                  ColumnDefinitions="*,Auto"
+                  ColumnSpacing="8"
+                  Visibility="{x:Bind ViewModel.HasResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+                    <TextBlock Text="活用形式"
                                FontSize="13"
                                FontWeight="SemiBold"
+                               FontFamily="{StaticResource AppFontFamilyMedium}"
+                               CharacterSpacing="15"
+                               Foreground="#8E8E93"
                                VerticalAlignment="Center" />
-                </Border>
+                    <TextBlock Text="{x:Bind ViewModel.ResultsCountText, Mode=OneWay}"
+                               FontSize="13"
+                               Foreground="#C7C7CC"
+                               VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBlock Grid.Column="1"
+                           Text="点击卡片复制结果"
+                           FontSize="11"
+                           Foreground="#C7C7CC"
+                           VerticalAlignment="Center" />
             </Grid>
 
-            <Grid Grid.Row="1">
-                <Border x:Name="SearchBorder"
-                        CornerRadius="14"
-                        Background="#FFFFFF"
-                        BorderBrush="#E2E8F0"
-                        BorderThickness="1"
-                        Padding="6,5,6,5">
-                    <Grid ColumnDefinitions="Auto,*,Auto,Auto">
-                        <FontIcon Grid.Column="0"
-                                  Glyph="&#xE721;"
-                                  FontSize="16"
-                                  Foreground="#94A3B8"
-                                  Margin="12,0,0,0"
+            <!-- Content area -->
+            <Grid Grid.Row="1" Margin="0,14,0,0">
+                <!-- Results: scrollable card grid -->
+                <ScrollViewer Visibility="{x:Bind ViewModel.HasResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                              HorizontalScrollBarVisibility="Disabled"
+                              HorizontalScrollMode="Disabled"
+                              VerticalScrollBarVisibility="Auto"
+                              Padding="0">
+                    <ItemsRepeater x:Name="FormsRepeater"
+                                   ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"
+                                   ItemTemplate="{StaticResource FormCardTemplate}"
+                                   Layout="{StaticResource FormGridLayout}"
+                                   ElementPrepared="FormsRepeater_ElementPrepared"
+                                   ElementClearing="FormsRepeater_ElementClearing" />
+                </ScrollViewer>
+
+                <!-- Empty / Error state — calm, centered -->
+                <StackPanel Visibility="{x:Bind ViewModel.CenterMessageVisibility, Mode=OneWay}"
+                            HorizontalAlignment="Center"
+                            VerticalAlignment="Center"
+                            Spacing="16">
+                    <Grid HorizontalAlignment="Center">
+                        <Border Width="56" Height="56" CornerRadius="28"
+                                Background="#1F5856D6"
+                                Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
+                        <Border Width="56" Height="56" CornerRadius="28"
+                                Background="#1FFF3B30"
+                                Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <FontIcon Glyph="&#xE721;"
+                                  FontSize="24"
+                                  Foreground="#5856D6"
+                                  Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}"
+                                  HorizontalAlignment="Center"
                                   VerticalAlignment="Center" />
-                        <TextBox Grid.Column="1"
-                                 x:Name="InputBox"
-                                 Style="{StaticResource BorderlessTextBoxStyle}"
-                                 PlaceholderText="例如：書く、食べる、する、来る"
-                                 FontSize="15"
-                                 Padding="10,0,0,0"
-                                 Text="{x:Bind ViewModel.InputWord, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                 KeyDown="InputBox_KeyDown"
-                                 GotFocus="InputBox_GotFocus"
-                                 LostFocus="InputBox_LostFocus" />
-                        <Button Grid.Column="2"
-                                Style="{StaticResource IconButtonStyle}"
-                                Visibility="{x:Bind ViewModel.HasInput, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                Command="{x:Bind ViewModel.ClearInputCommand}">
-                            <FontIcon Glyph="&#xE711;"
-                                      FontSize="12"
-                                      Foreground="#94A3B8" />
-                        </Button>
-                        <Button Grid.Column="3"
-                                Style="{StaticResource AccentButtonStyle}"
-                                Margin="4,0,0,0"
-                                Command="{x:Bind ViewModel.SearchCommand}">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE721;"
-                                          FontSize="14"
-                                          Foreground="White"
-                                          VerticalAlignment="Center" />
-                                <TextBlock Text="查询"
-                                           VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Button>
-                    </Grid>
-                </Border>
-            </Grid>
-
-            <Border x:Name="ResultsPanel"
-                    Grid.Row="2"
-                    CornerRadius="18"
-                    Background="#FFFFFF"
-                    BorderBrush="#E2E8F0"
-                    BorderThickness="1"
-                    Padding="22,18,22,18">
-                <Grid RowDefinitions="Auto,*">
-                    <Grid Grid.Row="0" ColumnDefinitions="*,Auto" ColumnSpacing="10">
-                        <StackPanel Grid.Column="0" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
-                            <TextBlock Text="活用形式"
-                                       FontSize="15"
-                                       FontFamily="{StaticResource AppFontFamilyMedium}"
-                                       Foreground="#0F172A"
-                                       VerticalAlignment="Center" />
-                            <TextBlock Text="{x:Bind ViewModel.ResultsCountText, Mode=OneWay}"
-                                       FontSize="12.5"
-                                       Foreground="#94A3B8"
-                                       VerticalAlignment="Center" />
-                        </StackPanel>
-                        <TextBlock Grid.Column="1"
-                                   Text="点击卡片复制结果"
-                                   FontSize="11.5"
-                                   Foreground="#CBD5E1"
+                        <TextBlock Text="!"
+                                   FontSize="28"
+                                   FontWeight="Bold"
+                                   FontFamily="{StaticResource AppFontFamilyBold}"
+                                   Foreground="#FF3B30"
+                                   Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
+                                   HorizontalAlignment="Center"
                                    VerticalAlignment="Center" />
                     </Grid>
+                    <StackPanel HorizontalAlignment="Center" Spacing="6">
+                        <TextBlock Text="{x:Bind ViewModel.CenterTitle, Mode=OneWay}"
+                                   FontSize="17"
+                                   FontWeight="SemiBold"
+                                   FontFamily="{StaticResource AppFontFamilyMedium}"
+                                   Foreground="#1C1C1E"
+                                   HorizontalAlignment="Center" />
+                        <TextBlock Text="{x:Bind ViewModel.CenterSubtitle, Mode=OneWay}"
+                                   FontSize="14"
+                                   Foreground="#8E8E93"
+                                   HorizontalAlignment="Center"
+                                   TextAlignment="Center"
+                                   TextWrapping="Wrap"
+                                   MaxWidth="320" />
+                    </StackPanel>
+                </StackPanel>
 
-                    <Grid Grid.Row="1" Margin="0,16,0,0">
-                        <ScrollViewer Visibility="{x:Bind ViewModel.HasResults, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                      HorizontalScrollBarVisibility="Disabled"
-                                      HorizontalScrollMode="Disabled"
-                                      VerticalScrollBarVisibility="Auto"
-                                      Padding="0">
-                            <ItemsRepeater ItemsSource="{x:Bind ViewModel.Forms, Mode=OneWay}"
-                                           ItemTemplate="{StaticResource FormCardTemplate}"
-                                           Layout="{StaticResource FormGridLayout}" />
-                        </ScrollViewer>
-
-                        <StackPanel Visibility="{x:Bind ViewModel.CenterMessageVisibility, Mode=OneWay}"
-                                    HorizontalAlignment="Center"
-                                    VerticalAlignment="Center"
-                                    Spacing="14">
-                            <Grid HorizontalAlignment="Center">
-                                <Border Width="60" Height="60" CornerRadius="30"
-                                        Background="#EEF2FF"
-                                        Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}" />
-                                <Border Width="60" Height="60" CornerRadius="30"
-                                        Background="#FFF1F2"
-                                        Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}" />
-                                <FontIcon Glyph="&#xE721;"
-                                          FontSize="26"
-                                          Foreground="#6366F1"
-                                          Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}, ConverterParameter=Invert}"
-                                          HorizontalAlignment="Center"
-                                          VerticalAlignment="Center" />
-                                <TextBlock Text="!"
-                                           FontSize="30"
-                                           FontWeight="Bold"
-                                           FontFamily="{StaticResource AppFontFamilyBold}"
-                                           Foreground="#E11D48"
-                                           Visibility="{x:Bind ViewModel.IsError, Mode=OneWay, Converter={StaticResource BooleanToVisibilityConverter}}"
-                                           HorizontalAlignment="Center"
-                                           VerticalAlignment="Center" />
-                            </Grid>
-                            <StackPanel HorizontalAlignment="Center" Spacing="5">
-                                <TextBlock Text="{x:Bind ViewModel.CenterTitle, Mode=OneWay}"
-                                           FontSize="16"
-                                           FontWeight="SemiBold"
-                                           FontFamily="{StaticResource AppFontFamilyMedium}"
-                                           Foreground="#334155"
-                                           HorizontalAlignment="Center" />
-                                <TextBlock Text="{x:Bind ViewModel.CenterSubtitle, Mode=OneWay}"
-                                           FontSize="13"
-                                           Foreground="#94A3B8"
-                                           HorizontalAlignment="Center"
-                                           TextAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           MaxWidth="340" />
-                            </StackPanel>
-                        </StackPanel>
-
-                        <Border x:Name="CopyFeedbackBorder"
-                                Visibility="Collapsed"
-                                Opacity="0"
-                                CornerRadius="8"
-                                Background="#0F172A"
-                                Padding="16,9"
-                                HorizontalAlignment="Center"
-                                VerticalAlignment="Bottom"
-                                Margin="0,0,0,8">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <FontIcon Glyph="&#xE73E;"
-                                          FontSize="13"
-                                          Foreground="#34D399"
-                                          VerticalAlignment="Center" />
-                                <TextBlock x:Name="CopyFeedbackText"
-                                           FontSize="12.5"
-                                           Foreground="White"
-                                           VerticalAlignment="Center" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Grid>
-            </Border>
+                <!-- Toast — dark pill, spring scale-in, bottom center -->
+                <Border x:Name="CopyFeedbackBorder"
+                        Visibility="Collapsed"
+                        Opacity="0"
+                        CornerRadius="12"
+                        Background="#2C2C2E"
+                        Padding="16,9"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Bottom"
+                        Margin="0,0,0,12"
+                        RenderTransformOrigin="0.5,0.5">
+                    <Border.RenderTransform>
+                        <ScaleTransform x:Name="ToastScale" ScaleX="1" ScaleY="1" />
+                    </Border.RenderTransform>
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <FontIcon Glyph="&#xE73E;"
+                                  FontSize="13"
+                                  Foreground="#34C759"
+                                  VerticalAlignment="Center" />
+                        <TextBlock x:Name="CopyFeedbackText"
+                                   FontSize="13"
+                                   Foreground="White"
+                                   VerticalAlignment="Center" />
+                    </StackPanel>
+                </Border>
+            </Grid>
         </Grid>
     </Grid>
 </Page>
